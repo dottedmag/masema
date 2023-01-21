@@ -1,0 +1,13 @@
+# -*- mode: toml -*-
+
+[mail]
+from = "Masema <masema@example.org>"
+to = "Example Example <example@example.org>"
+
+[app]
+
+server_url = "https://mastodon.example.org"
+
+# Obtain the following value by registering application with Mastodon,
+# it is in the field "Your access token" on application page
+token = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
