@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"html/template"
+	"mime"
 	"mime/multipart"
-	"mime/quotedprintable"
 	"net/mail"
 )
 
@@ -121,14 +121,6 @@ func templateMsg(msg msg) map[string]any {
 	}
 }
 
-func quotedPrintable(s string) string {
-	var buf bytes.Buffer
-	w := quotedprintable.NewWriter(&buf)
-	w.Write([]byte(s))
-	w.Close()
-	return buf.String()
-}
-
 func formatMessage(rawMsg rawMessage, from, to *mail.Address) []byte {
 	var msg msg
 	if err := json.Unmarshal([]byte(rawMsg.content), &msg); err != nil {
@@ -157,7 +149,7 @@ func formatMessage(rawMsg rawMessage, from, to *mail.Address) []byte {
 
 	return []byte("From: " + from.String() + "\r\n" +
 		"To: " + to.String() + "\r\n" +
-		"Subject: " + quotedPrintable(msg.Account.DisplayName) + "\r\n" +
+		"Subject: " + mime.QEncoding.Encode("UTF-8", msg.Account.DisplayName) + "\r\n" +
 		"Content-Type: " + multipart.FormDataContentType() + "\r\n" +
 		"\r\n" +
 		messageBuf.String())
