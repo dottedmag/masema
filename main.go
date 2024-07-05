@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -21,7 +22,7 @@ type config struct {
 	Mail struct {
 		From string `toml:"from"`
 		To   string `toml:"to"`
-	} `toml"mail"`
+	} `toml:"mail"`
 
 	App struct {
 		ServerURL string `toml:"server_url"`
@@ -29,8 +30,11 @@ type config struct {
 	} `toml:"app"`
 }
 
-func loadConfig() config {
-	configFileName := xdgConfigDir() + "/masema/config.toml"
+func defaultConfigFile() string {
+	return xdgConfigDir() + "/masema/config.toml"
+}
+
+func loadConfig(configFileName string) config {
 	fh, err := os.Open(configFileName)
 	if err != nil {
 		fatal("failed to open config file: %s", err)
@@ -47,13 +51,18 @@ func loadConfig() config {
 }
 
 func main() {
-	if len(os.Args) != 2 {
+	var configFileName, dbFileName string
+	flag.StringVar(&configFileName, "config-file", defaultConfigFile(), "Config file location")
+	flag.StringVar(&dbFileName, "db-file", defaultDBFile(), "DB file location")
+	flag.Parse()
+
+	if flag.NArg() != 1 {
 		usage()
 	}
 
-	c := loadConfig()
+	c := loadConfig(configFileName)
 
-	db, err := openDB()
+	db, err := openDB(dbFileName)
 	if err != nil {
 		fatal("failed to open database: %s", err)
 	}
@@ -63,7 +72,7 @@ func main() {
 		}
 	}()
 
-	switch os.Args[1] {
+	switch flag.Arg(0) {
 	case "fetch":
 		fetch(c, db)
 	case "send":

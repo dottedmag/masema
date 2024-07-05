@@ -1,0 +1,9 @@
+[Unit]
+Description=Run masema
+
+[Timer]
+OnCalendar=*-*-* 4,13:59:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

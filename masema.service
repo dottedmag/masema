@@ -1,0 +1,13 @@
+[Unit]
+Description=masema
+
+[Install]
+WantedBy=default.service
+
+[Service]
+Type=oneshot
+Restart=on-failure
+RestartSec=60
+
+ExecStartPre=/home/dottedmag/masema/masema -config-file /home/dottedmag/masema/config.toml -db-file /home/dottedmag/masema/messages.db fetch
+ExecStart=/home/dottedmag/masema/masema -config-file /home/dottedmag/masema/config.toml -db-file /home/dottedmag/masema/messages.db send

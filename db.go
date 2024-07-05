@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"os"
+	"path/filepath"
 
 	"github.com/dottedmag/sqv"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/glebarez/go-sqlite"
 )
 
 const masemaAppID = 0x6d61736d
@@ -21,11 +22,14 @@ CREATE TABLE messages (
 `,
 }
 
-func openDB() (*sql.DB, error) {
-	dir := xdgDataDir() + "/masema"
-	os.MkdirAll(dir, 0o755)
+func defaultDBFile() string {
+	return xdgDataDir() + "/masema/messages.db"
+}
 
-	db, err := sql.Open("sqlite3", dir+"/messages.db")
+func openDB(dbFileName string) (*sql.DB, error) {
+	os.MkdirAll(filepath.Dir(dbFileName), 0o755)
+
+	db, err := sql.Open("sqlite", dbFileName)
 	if err != nil {
 		return nil, err
 	}
